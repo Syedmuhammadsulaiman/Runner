@@ -3,6 +3,7 @@ import sys
 from random import randint, choice
 
 class Player(pygame.sprite.Sprite):
+    first_landing = True
     def __init__(self):
         super().__init__()
         player_walk_1 = pygame.image.load("graphics/player/player_walk_1.png").convert_alpha()
@@ -16,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0
 
         self.is_falling = True
+        self.land_sound = pygame.mixer.Sound("audio/human-impact-on-ground-6982.mp3")
         self.fall_speed = 5  # Adjust the fall speed
         self.image = self.player_jump  # Initially set to jump image
         self.rect = self.image.get_rect(midbottom=(80, -100))  # Start above the screen
@@ -35,6 +37,9 @@ class Player(pygame.sprite.Sprite):
             self.rect.y += self.gravity
             self.gravity += 1
             if self.rect.bottom >= 300:
+                if Player.first_landing:
+                    self.land_sound.play()  # Play the landing sound for the first landing
+                    Player.first_landing = False
                 self.is_falling = False
                 self.rect.bottom = 300
         else:
@@ -161,6 +166,7 @@ while True:
                 game_active = True
                 sky_x = 0
                 start_time = int(pygame.time.get_ticks() / 1000)
+                Player.first_landing = True
 
     if game_active:
         sky_x -= 1
